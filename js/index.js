@@ -41,7 +41,9 @@ function drawKochSegment( startingPoint, vector, level ) {
 		path.strokeColor.alpha = 0;
 		// path.shadowColor.alpha = 0;
 
-	
+		// // var t = new Tween( path, {strokeWidth: 1}, {strokeWidth: 5}, 1000 );
+
+		// path.tween( {rotation: 0}, {rotation: 45}, {easing: 'easeInOutCubic', duration: 1000} );
 	}
 }
 
@@ -75,9 +77,9 @@ function onFrame( event ) {
 
 // function onMouseMove( event ) {
 // 	for ( const path of project.activeLayer.children ) {
-// 		path.strokeColor.hue = event.point.x / view.viewSize.width * 360;
-// 		path.shadowColor.hue = event.point.x / view.viewSize.width * 360;
-// 		path.strokeWidth = (view.viewSize.height - event.point.y) / view.viewSize.height * 4 + 1;
+// 		// path.strokeColor.hue = event.point.x / view.viewSize.width * 360;
+// 		// path.shadowColor.hue = event.point.x / view.viewSize.width * 360;
+// 		path.strokeWidth += (view.center.y - event.point.y) / view.viewSize.height;
 // 	}
 
 
