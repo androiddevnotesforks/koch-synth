@@ -1,14 +1,16 @@
 const WIDTH = view.viewSize.width * .75;
 const LEVELS = 4;
-const BPM = 180;
+const BPM = 120;
 
 
 const majorScale = [0, 2, 4, 5, 7, 9, 11];
+const minorPentaScale = [0, 2, 3, 7, 9];
+const phreygishScale = [0, 2, 3, 6, 7, 9];
 
 const synth = new Tone.Synth().toDestination();
 let lastPath = 0;
 
-const start = view.center - [WIDTH/2, 0];
+const start = view.center - [WIDTH/2, view.viewSize.height * -1 / 3];
 const vector = new Point([WIDTH, 0]);
 let currentSegment = 0;
 
@@ -22,6 +24,11 @@ document.querySelector('#startButton')?.addEventListener('click', async () => {
 
 startTransport();
 
+function scaleDegreeToMidi( scale, scaleDegree, root = 64 ) {
+	let l = scale.length;
+	return root + scale[ (( scaleDegree % l ) + l ) % l ] + Math.floor( scaleDegree / l) * 12;
+}
+
 function startTransport() {
 	Tone.Transport.bpm.value = BPM;
 	Tone.Transport.scheduleRepeat( playSegment, "16n" );
@@ -30,9 +37,10 @@ function startTransport() {
 
 function playSegment( time ) {
 	let segment = project.activeLayer.children[ currentSegment ];
-	synth.triggerAttackRelease( Tone.Midi( segment.data.pitch ).toFrequency(), "16n", time + 0.150 );
+	synth.triggerAttackRelease( Tone.Midi( 
+		scaleDegreeToMidi( majorScale, segment.data.pitch )).toFrequency(), "16n", time + 0.150 );
 	segment.tween( {'strokeColor.alpha': 1}, 100 );
-	segment.tween( {"segments[1].point": segment.data.endPoint }, 300 );
+	segment.tween( {"segments[1].point": segment.data.endPoint }, 50 );
 	segment.tween( {'strokeWidth': 5}, 250 ).then( function() {
 		segment.tween( {'strokeWidth': 1}, 3000 );
 	});
@@ -50,7 +58,7 @@ Math.randomNormal = function() {
     return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
 }
 
-function drawKochSegment( startingPoint, vector, level, currentPitch = 64) {
+function drawKochSegment( startingPoint, vector, level, currentPitch = 0, pitchOffset = 1) {
 
 	if ( level > 0 ) {
 
@@ -63,8 +71,8 @@ function drawKochSegment( startingPoint, vector, level, currentPitch = 64) {
 		// pointC += new Point( Math.randomNormal() * 3 , Math.randomNormal() * 3 );
 
 		drawKochSegment( pointA, pointB - pointA, level-1, currentPitch );
-		drawKochSegment( pointB, pointC - pointB, level-1, currentPitch + level );
-		drawKochSegment( pointC, pointD - pointC, level-1, currentPitch - level);
+		drawKochSegment( pointB, pointC - pointB, level-1, currentPitch + level + pitchOffset);
+		drawKochSegment( pointC, pointD - pointC, level-1, currentPitch - level - pitchOffset);
 		drawKochSegment( pointD, pointE - pointD, level-1, currentPitch );
 
 	}
