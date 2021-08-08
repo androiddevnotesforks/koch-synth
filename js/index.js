@@ -88,6 +88,14 @@ function drawKochSegment( startingPoint, vector, level, currentPitch = 64) {
 		// path.tween( {rotation: 0}, {rotation: 45}, {easing: 'easeInOutCubic', duration: 1000} );
 	}
 }
+
+
+function onFrame( event ) {
+	for ( const path of project.activeLayer.children ) {
+		path.strokeColor.hue += 0.1;
+	}
+}
+
 /*
 function onFrame( event ) {
 	for ( const path of project.activeLayer.children ) {
