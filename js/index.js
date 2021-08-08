@@ -37,6 +37,9 @@ function playSegment( time ) {
 		segment.tween( {'strokeWidth': 1}, 3000 );
 	});
 	currentSegment++;
+	if ( currentSegment >= project.activeLayer.children.length ) {
+		currentSegment = 0;
+	}
 }
 
 // from https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
