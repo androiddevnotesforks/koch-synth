@@ -1,15 +1,43 @@
 const WIDTH = view.viewSize.width * .75;
-const LEVELS = 3;
+const LEVELS = 4;
+const BPM = 180;
 
-//create a synth and connect it to the main output (your speakers)
+
+const majorScale = [0, 2, 4, 5, 7, 9, 11];
+
 const synth = new Tone.Synth().toDestination();
 let lastPath = 0;
 
-document.querySelector('myCanvas')?.addEventListener('click', async () => {
+const start = view.center - [WIDTH/2, 0];
+const vector = new Point([WIDTH, 0]);
+let currentSegment = 0;
+
+drawKochSegment( start, vector, LEVELS);
+
+document.querySelector('#startButton')?.addEventListener('click', async () => {
 	await Tone.start()
 	console.log('audio is ready')
 })
 
+
+startTransport();
+
+function startTransport() {
+	Tone.Transport.bpm.value = BPM;
+	Tone.Transport.scheduleRepeat( playSegment, "16n" );
+	Tone.Transport.start();
+}
+
+function playSegment( time ) {
+	let segment = project.activeLayer.children[ currentSegment ];
+	synth.triggerAttackRelease( Tone.Midi( segment.data.pitch ).toFrequency(), "16n", time + 0.150 );
+	segment.tween( {'strokeColor.alpha': 1}, 100 );
+	segment.tween( {"segments[1].point": segment.data.endPoint }, 300 );
+	segment.tween( {'strokeWidth': 5}, 250 ).then( function() {
+		segment.tween( {'strokeWidth': 1}, 3000 );
+	});
+	currentSegment++;
+}
 
 // from https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
 Math.randomNormal = function() {
@@ -19,7 +47,7 @@ Math.randomNormal = function() {
     return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
 }
 
-function drawKochSegment( startingPoint, vector, level, currentPitch ) {
+function drawKochSegment( startingPoint, vector, level, currentPitch = 64) {
 
 	if ( level > 0 ) {
 
@@ -43,16 +71,16 @@ function drawKochSegment( startingPoint, vector, level, currentPitch ) {
 
 		var path = new Path.Line({
 			from: startingPoint,
-			to: startingPoint + vector,
+			to: startingPoint,
 			strokeColor: 'cyan',
 			strokeWidth: 1,
 			strokeCap: 'round',
-			data: { pitch: currentPitch }
+			data: { pitch: currentPitch, endPoint: startingPoint + vector }
 			// shadowColor: 'cyan',
 			// shadowBlur: 8,
 		});
 		path.strokeColor.alpha = 0;
-		console.log( currentPitch );
+		//console.log( currentPitch );
 		// path.shadowColor.alpha = 0;
 
 		// // var t = new Tween( path, {strokeWidth: 1}, {strokeWidth: 5}, 1000 );
@@ -60,7 +88,7 @@ function drawKochSegment( startingPoint, vector, level, currentPitch ) {
 		// path.tween( {rotation: 0}, {rotation: 45}, {easing: 'easeInOutCubic', duration: 1000} );
 	}
 }
-
+/*
 function onFrame( event ) {
 	for ( const path of project.activeLayer.children ) {
 		path.strokeColor.hue += 0.1;
@@ -86,7 +114,7 @@ function onFrame( event ) {
 	if ( currentPath > lastPath ) {
 
 		//play a middle 'C' for the duration of an 8th note
-		synth.triggerAttackRelease( project.activeLayer.children[ currentPath ].data.pitch, "8n", Tone.now() + currentPath);
+		// synth.triggerAttackRelease( project.activeLayer.children[ currentPath ].data.pitch, "8n", Tone.now() + currentPath);
 		lastPath = currentPath;
 	}
 
@@ -100,6 +128,7 @@ function onFrame( event ) {
 	// }
 
 }
+*/
 
 // function onMouseMove( event ) {
 // 	for ( const path of project.activeLayer.children ) {
@@ -113,10 +142,5 @@ function onFrame( event ) {
 // }
 
 
-
-
-const start = view.center - [WIDTH/2, 0];
-const vector = new Point([WIDTH, 0]);
-drawKochSegment( start, vector, LEVELS, 64);
 
 
