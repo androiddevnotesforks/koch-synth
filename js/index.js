@@ -1,11 +1,14 @@
 // from https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
 Math.randomNormal = function() {
-    var u = 0, v = 0;
-    while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
-    while(v === 0) v = Math.random();
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random(); //Converting [0,1) to (0,1)
+    while (v === 0) v = Math.random();
     return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
 }
 
+document.querySelector('#startButton')?.addEventListener('click', async () => {
+	await Tone.start();
+})
 
 
 function KochSynth( options = {} ) {
@@ -15,9 +18,10 @@ function KochSynth( options = {} ) {
 	this.tonality = options.tonality || Tonality.Major;
 	this.view = options.view;
 	this.synth = new Tone.Synth().toDestination();
+	this.start = this.view.center - [this.width/2, this.view.viewSize.height * -1 / 3];
+	this.vector = new Point([this.width, 0]);
 	this.lastPath = 0;
-
-
+	this.currentSegment = 0;
 }
 
 
@@ -27,36 +31,33 @@ function KochSynth( options = {} ) {
 
 
 
-const start = view.center - [WIDTH/2, view.viewSize.height * -1 / 3];
-const vector = new Point([WIDTH, 0]);
-let currentSegment = 0;
+// const start = view.center - [WIDTH/2, view.viewSize.height * -1 / 3];
+// const vector = new Point([WIDTH, 0]);
+// let currentSegment = 0;
 
 drawKochSegment( start, vector, LEVELS);
 
-document.querySelector('#startButton')?.addEventListener('click', async () => {
-	await Tone.start();
-})
 
 
 startTransport();
 
-function startTransport() {
-	Tone.Transport.bpm.value = BPM;
-	Tone.Transport.scheduleRepeat( playSegment, "16n" );
+function KochSynth.prototype.startTransport = function() {
+	Tone.Transport.bpm.value = this.tempo;
+	Tone.Transport.scheduleRepeat( this.playSegment, "16n" );
 	Tone.Transport.start();
 }
 
-function playSegment( time ) {
-	let segment = project.activeLayer.children[ currentSegment ];
+function KochSynth.prototype.playSegment = function( time ) {
+	let segment = project.activeLayer.children[ this.currentSegment ];
 	synth.triggerAttackRelease( tonality.freq( segment.data.pitch ), "16n", time + 0.150 );
 	segment.tween( {'strokeColor.alpha': 1}, 100 );
 	segment.tween( {"segments[1].point": segment.data.endPoint }, 50 );
 	segment.tween( {'strokeWidth': 5}, 250 ).then( function() {
 		segment.tween( {'strokeWidth': 1}, 3000 );
 	});
-	currentSegment++;
-	if ( currentSegment >= project.activeLayer.children.length ) {
-		currentSegment = 0;
+	this.currentSegment++;
+	if ( this.currentSegment >= project.activeLayer.children.length ) {
+		this.currentSegment = 0;
 	}
 }
 
