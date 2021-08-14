@@ -8,8 +8,8 @@ Math.randomNormal = function() {
 
 
 
-function KochSynth( options ) {
-	this.width = options.width;
+function KochSynth( options = {} ) {
+	this.width = options.width || view.viewSize.width * .75;
 	this.levels = options.levels || 1;
 	this.tempo = options.tempo || 120;
 	this.tonality = options.tonality || Tonality.Major;
@@ -21,9 +21,9 @@ function KochSynth( options ) {
 }
 
 
-const WIDTH = view.viewSize.width * .75;
-const LEVELS = 5;
-const BPM = 90;
+// const WIDTH = view.viewSize.width * .75;
+// const LEVELS = 5;
+// const BPM = 90;
 
 
 
