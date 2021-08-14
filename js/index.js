@@ -1,11 +1,31 @@
+// from https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
+Math.randomNormal = function() {
+    var u = 0, v = 0;
+    while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
+    while(v === 0) v = Math.random();
+    return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+}
+
+
+
+function KochSynth( options ) {
+	this.width = options.width;
+	this.levels = options.levels || 1;
+	this.tempo = options.tempo || 120;
+	this.tonality = options.tonality || Tonality.Major;
+	this.view = options.view;
+	this.synth = new Tone.Synth().toDestination();
+	this.lastPath = 0;
+
+
+}
+
+
 const WIDTH = view.viewSize.width * .75;
 const LEVELS = 5;
 const BPM = 90;
 
-let tonality = Tonality.Major;
 
-const synth = new Tone.Synth().toDestination();
-let lastPath = 0;
 
 const start = view.center - [WIDTH/2, view.viewSize.height * -1 / 3];
 const vector = new Point([WIDTH, 0]);
@@ -14,8 +34,7 @@ let currentSegment = 0;
 drawKochSegment( start, vector, LEVELS);
 
 document.querySelector('#startButton')?.addEventListener('click', async () => {
-	await Tone.start()
-	console.log('audio is ready')
+	await Tone.start();
 })
 
 
@@ -41,13 +60,6 @@ function playSegment( time ) {
 	}
 }
 
-// from https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
-Math.randomNormal = function() {
-    var u = 0, v = 0;
-    while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
-    while(v === 0) v = Math.random();
-    return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
-}
 
 function drawKochSegment( startingPoint, vector, level, currentPitch = 0, pitchOffset = 0) {
 
