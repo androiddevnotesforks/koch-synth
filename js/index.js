@@ -1,11 +1,8 @@
 const WIDTH = view.viewSize.width * .75;
 const LEVELS = 5;
-const BPM = 180;
+const BPM = 90;
 
-
-const majorScale = [0, 2, 4, 5, 7, 9, 11];
-const minorPentaScale = [0, 2, 3, 7, 9];
-const phreygishScale = [0, 2, 3, 6, 7, 9];
+let tonality = Tonality.Major;
 
 const synth = new Tone.Synth().toDestination();
 let lastPath = 0;
@@ -24,11 +21,6 @@ document.querySelector('#startButton')?.addEventListener('click', async () => {
 
 startTransport();
 
-function scaleDegreeToMidi( scale, scaleDegree, root = 64 ) {
-	let l = scale.length;
-	return root + scale[ (( scaleDegree % l ) + l ) % l ] + Math.floor( scaleDegree / l) * 12;
-}
-
 function startTransport() {
 	Tone.Transport.bpm.value = BPM;
 	Tone.Transport.scheduleRepeat( playSegment, "16n" );
@@ -37,8 +29,7 @@ function startTransport() {
 
 function playSegment( time ) {
 	let segment = project.activeLayer.children[ currentSegment ];
-	synth.triggerAttackRelease( Tone.Midi( 
-		scaleDegreeToMidi( minorPentaScale, segment.data.pitch )).toFrequency(), "16n", time + 0.150 );
+	synth.triggerAttackRelease( tonality.freq( segment.data.pitch ), "16n", time + 0.150 );
 	segment.tween( {'strokeColor.alpha': 1}, 100 );
 	segment.tween( {"segments[1].point": segment.data.endPoint }, 50 );
 	segment.tween( {'strokeWidth': 5}, 250 ).then( function() {
