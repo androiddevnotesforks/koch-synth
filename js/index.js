@@ -17,6 +17,7 @@ function KochSynth( options = {} ) {
 	this.tempo = options.tempo || 120;
 	this.tonality = options.tonality || Tonality.Major;
 	this.tonic = options.tonic || Tonality.MIDDLEC;
+	this.offset = options.offset || 1;
 	this.view = options.view;
 	this.synth = new Tone.Synth().toDestination();
 	this.startingPoint = this.view.center - [this.width/2, this.view.viewSize.height * -1 / 3];
@@ -57,6 +58,15 @@ KochSynth.prototype.setTonality = function( tonality ) {
 	}
 }
 
+KochSynth.prototype.setOffset = function( offset ) {
+	this.offset = offset;
+}
+
+KochSynth.prototype.setLevels = function( levels ) {
+	this.levels = levels;
+	this.reset();
+}
+
 
 KochSynth.prototype.start = function() {
 	Tone.Transport.bpm.value = this.tempo;
@@ -66,6 +76,12 @@ KochSynth.prototype.start = function() {
 
 KochSynth.prototype.stop = function() {
 	Tone.Transport.stop();
+}
+
+KochSynth.prototype.reset = function() {
+	project.activeLayer.removeChildren()
+	this.currentSegment = 0;
+	this.drawKochSegment();
 }
 
 KochSynth.prototype.playSegment = function( time ) {
@@ -83,7 +99,7 @@ KochSynth.prototype.playSegment = function( time ) {
 }
 
 
-KochSynth.prototype.drawKochSegment = function( startingPoint = this.startingPoint, vector = this.vector, level = 4, currentPitch = 0, pitchOffset = 0) {
+KochSynth.prototype.drawKochSegment = function( startingPoint = this.startingPoint, vector = this.vector, level = this.levels, currentPitch = 0, pitchOffset = this.offset) {
 
 	if ( level > 0 ) {
 
@@ -115,7 +131,7 @@ KochSynth.prototype.drawKochSegment = function( startingPoint = this.startingPoi
 	}
 }
 
-
+/* Animate the hue */
 function onFrame( event ) {
 	for ( const path of project.activeLayer.children ) {
 		path.strokeColor.hue += 0.1;
@@ -154,6 +170,16 @@ document.querySelector( '#tonic' ).addEventListener( 'change', (event) => {
 document.querySelector( '#tonality' ).addEventListener( 'change', (event) => {
 	koch.setTonality( event.target.value );
 });
+
+document.querySelector( '#levels' ).addEventListener( 'change', (event) => {
+	koch.setLevels( Number( event.target.value ) );
+});
+
+document.querySelector( '#offset' ).addEventListener( 'change', (event) => {
+	koch.setOffset( Number( event.target.value ) );
+});
+
+
 
 
 // ####        ##       ####     ####   #####
