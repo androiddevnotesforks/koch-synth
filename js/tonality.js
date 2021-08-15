@@ -8,7 +8,7 @@ Tonality.A440 = 440;
 
 
 /* Defines a tonality based on an array of scale degrees (counting from zero)
- * and an optional tonalCenter defined using MIDI note numbers, which defauls to 64 (middle C)
+ * and an optional tonic defined using MIDI note numbers, which defauls to 60 (middle C)
  */
 
 
@@ -21,6 +21,16 @@ function Tonality( intervals = {}, tonic = Tonality.MIDDLEC) {
 /* Given a scale degree, returns the pitch (in MIDI note numbers) within this tonality */
 Tonality.prototype.pitch = function( degree ) {
 	const l = this.intervals.length;
+
+	console.log();
+	// console.log( 'degree: ', degree );
+	// console.log( 'this: ', this );
+	// console.log( 'l: ', l );
+	console.log( this.tonic
+		+ this.intervals[ (( degree % l ) + l ) % l ]
+		// + Math.floor( degree / l) * Tonality.OCTAVE
+		);
+
 	return this.tonic
 		+ this.intervals[ (( degree % l ) + l ) % l ]
 		+ Math.floor( degree / l) * Tonality.OCTAVE;	

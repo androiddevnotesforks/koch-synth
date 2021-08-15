@@ -6,9 +6,9 @@ Math.randomNormal = function() {
     return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
 }
 
-document.querySelector('#startButton')?.addEventListener('click', async () => {
-	await Tone.start();
-})
+// document.querySelector('#playPauseButton')?.addEventListener('click', async () => {
+// 	await Tone.start();
+// })
 
 
 function KochSynth( options = {} ) {
@@ -16,40 +16,61 @@ function KochSynth( options = {} ) {
 	this.levels = options.levels || 1;
 	this.tempo = options.tempo || 120;
 	this.tonality = options.tonality || Tonality.Major;
+	this.tonic = options.tonic || Tonality.MIDDLEC;
 	this.view = options.view;
 	this.synth = new Tone.Synth().toDestination();
-	this.start = this.view.center - [this.width/2, this.view.viewSize.height * -1 / 3];
+	this.startingPoint = this.view.center - [this.width/2, this.view.viewSize.height * -1 / 3];
 	this.vector = new Point([this.width, 0]);
 	this.lastPath = 0;
 	this.currentSegment = 0;
+	this.playing = false;
+}
+
+KochSynth.prototype.setTempo = function( tempo ) {
+	this.tempo = tempo;
+	Tone.Transport.bpm.value = this.tempo;
+}
+
+KochSynth.prototype.setTonic = function( tonic ) {
+	this.tonality.setTonic( tonic );
+}
+
+KochSynth.prototype.setTonality = function( tonality ) {
+	switch( tonality ) {
+		case 'Major':
+			this.tonality = Tonality.Major.setTonic( this.tonic );
+			console.log( 'this.tonality: ', this.tonality );
+			break;
+		case 'Minor':
+			this.tonality = Tonality.Minor.setTonic( this.tonic );
+			console.log( 'this.tonality: ', this.tonality );
+			break;
+		case 'Pentatonic':
+			this.tonality = Tonality.Pentatonic.setTonic( this.tonic );
+			break;
+		case 'MinorPentatonic':
+			this.tonality = Tonality.MinorPentatonic.setTonic( this.tonic );
+			break;
+		case 'Phreygish':
+			this.tonality = Tonality.Phreygish.setTonic( this.tonic );
+			break;
+	}
 }
 
 
-// const WIDTH = view.viewSize.width * .75;
-// const LEVELS = 5;
-// const BPM = 90;
-
-
-
-// const start = view.center - [WIDTH/2, view.viewSize.height * -1 / 3];
-// const vector = new Point([WIDTH, 0]);
-// let currentSegment = 0;
-
-drawKochSegment( start, vector, LEVELS);
-
-
-
-startTransport();
-
-function KochSynth.prototype.startTransport = function() {
+KochSynth.prototype.start = function() {
 	Tone.Transport.bpm.value = this.tempo;
-	Tone.Transport.scheduleRepeat( this.playSegment, "16n" );
+	Tone.Transport.scheduleRepeat( this.playSegment.bind( this ), "16n" );
 	Tone.Transport.start();
 }
 
-function KochSynth.prototype.playSegment = function( time ) {
+KochSynth.prototype.stop = function() {
+	Tone.Transport.stop();
+}
+
+KochSynth.prototype.playSegment = function( time ) {
 	let segment = project.activeLayer.children[ this.currentSegment ];
-	synth.triggerAttackRelease( tonality.freq( segment.data.pitch ), "16n", time + 0.150 );
+	this.synth.triggerAttackRelease( this.tonality.freq( segment.data.pitch ), "16n", time + 0.150 );
 	segment.tween( {'strokeColor.alpha': 1}, 100 );
 	segment.tween( {"segments[1].point": segment.data.endPoint }, 50 );
 	segment.tween( {'strokeWidth': 5}, 250 ).then( function() {
@@ -62,7 +83,7 @@ function KochSynth.prototype.playSegment = function( time ) {
 }
 
 
-function drawKochSegment( startingPoint, vector, level, currentPitch = 0, pitchOffset = 0) {
+KochSynth.prototype.drawKochSegment = function( startingPoint = this.startingPoint, vector = this.vector, level = 4, currentPitch = 0, pitchOffset = 0) {
 
 	if ( level > 0 ) {
 
@@ -72,10 +93,10 @@ function drawKochSegment( startingPoint, vector, level, currentPitch = 0, pitchO
 			pointD = pointC + (vector / 3).rotate(60),
 			pointE = pointD + vector / 3;
 
-		drawKochSegment( pointA, pointB - pointA, level-1, currentPitch );
-		drawKochSegment( pointB, pointC - pointB, level-1, currentPitch + level + pitchOffset);
-		drawKochSegment( pointC, pointD - pointC, level-1, currentPitch - level - pitchOffset);
-		drawKochSegment( pointD, pointE - pointD, level-1, currentPitch );
+		this.drawKochSegment( pointA, pointB - pointA, level-1, currentPitch );
+		this.drawKochSegment( pointB, pointC - pointB, level-1, currentPitch + level + pitchOffset);
+		this.drawKochSegment( pointC, pointD - pointC, level-1, currentPitch - level - pitchOffset);
+		this.drawKochSegment( pointD, pointE - pointD, level-1, currentPitch );
 
 	}
 	else {
@@ -100,6 +121,50 @@ function onFrame( event ) {
 		path.strokeColor.hue += 0.1;
 	}
 }
+
+const koch = new KochSynth( {
+	view: view
+});
+
+koch.drawKochSegment();
+
+
+document.querySelector('#playPauseButton').addEventListener('click',  (event) => {
+	if ( koch.playing ) {
+		koch.playing = false;
+		koch.stop();
+		event.target.innerText = 'play';
+	}
+	else {
+		koch.playing = true;
+		koch.start();
+		event.target.innerText = 'stop';
+	}
+
+});
+
+document.querySelector( '#tempo' ).addEventListener( 'change', (event) => {
+	koch.setTempo( event.target.value );
+});
+
+document.querySelector( '#tonic' ).addEventListener( 'change', (event) => {
+	koch.setTonic( Number( event.target.value ) );
+});
+
+document.querySelector( '#tonality' ).addEventListener( 'change', (event) => {
+	koch.setTonality( event.target.value );
+});
+
+
+// ####        ##       ####     ####   #####
+// ####       ####      ####      #### ####
+// ####        ##       ####       #######
+// ####                 ####        ####
+// ####       ####      ####        ####
+// ####       ####      ####        ####
+// ########   ####      #########   ####
+// ########   ####      #########   ####
+
 
 
 
