@@ -60,6 +60,7 @@ KochSynth.prototype.setTonality = function( tonality ) {
 
 KochSynth.prototype.setOffset = function( offset ) {
 	this.offset = offset;
+	this.reset();
 }
 
 KochSynth.prototype.setLevels = function( levels ) {
