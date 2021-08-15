@@ -40,11 +40,9 @@ KochSynth.prototype.setTonality = function( tonality ) {
 	switch( tonality ) {
 		case 'Major':
 			this.tonality = Tonality.Major.setTonic( this.tonic );
-			console.log( 'this.tonality: ', this.tonality );
 			break;
 		case 'Minor':
 			this.tonality = Tonality.Minor.setTonic( this.tonic );
-			console.log( 'this.tonality: ', this.tonality );
 			break;
 		case 'Pentatonic':
 			this.tonality = Tonality.Pentatonic.setTonic( this.tonic );
