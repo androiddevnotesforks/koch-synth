@@ -62,3 +62,10 @@ div.parameter label {
 	font-size: 0.8em;
 	color: cyan;
 }
+
+div#debug {
+	position: fixed;
+	color: cyan;
+	bottom: 10px;
+	left: 10px;
+}

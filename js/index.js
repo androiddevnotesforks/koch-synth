@@ -25,6 +25,7 @@ function KochSynth( options = {} ) {
 	this.lastPath = 0;
 	this.currentSegment = 0;
 	this.playing = false;
+	this.initialized = false;
 }
 
 KochSynth.prototype.setTempo = function( tempo ) {
@@ -68,8 +69,11 @@ KochSynth.prototype.setLevels = function( levels ) {
 
 
 KochSynth.prototype.start = function() {
-	Tone.Transport.bpm.value = this.tempo;
-	Tone.Transport.scheduleRepeat( this.playSegment.bind( this ), "16n" );
+	if ( this.initialized == false ) {
+		this.initialized = true;
+		Tone.Transport.bpm.value = this.tempo;
+		Tone.Transport.scheduleRepeat( this.playSegment.bind( this ), "16n" );
+	}
 	Tone.Transport.start();
 }
 
@@ -86,6 +90,8 @@ KochSynth.prototype.reset = function() {
 KochSynth.prototype.playSegment = function( time ) {
 	let segment = project.activeLayer.children[ this.currentSegment ];
 	this.synth.triggerAttackRelease( this.tonality.freq( segment.data.pitch ), "16n", time + 0.150 );
+
+	document.getElementById( 'debug' ).innerText = segment.data.pitch;
 	segment.tween( {'strokeColor.alpha': 1}, 100 );
 	segment.tween( {"segments[1].point": segment.data.endPoint }, 50 );
 	segment.tween( {'strokeWidth': 5}, 250 ).then( function() {
@@ -158,6 +164,27 @@ document.querySelector('#playPauseButton').addEventListener('click',  (event) =>
 
 });
 
+document.getElementById( 'playPauseButton' ).addEventListener( 'keydown', (event) => {
+	event.preventDefault();
+});
+
+document.addEventListener( 'keypress', (e) => {
+	if (e.keyCode == 32) {
+		if ( koch.playing ) {
+			koch.playing = false;
+			koch.stop();
+			document.getElementById( 'playPauseButton' ).innerText = 'play';
+		}
+		else {
+			koch.playing = true;
+			koch.start();
+			document.getElementById( 'playPauseButton' ).innerText = 'stop';
+		}
+
+	}
+});
+
+
 document.querySelector( '#tempo' ).addEventListener( 'change', (event) => {
 	koch.setTempo( event.target.value );
 });
@@ -178,6 +205,19 @@ document.querySelector( '#offset' ).addEventListener( 'change', (event) => {
 	koch.setOffset( Number( event.target.value ) );
 });
 
+document.querySelectorAll( 'input' ).forEach( (el) => {
+
+	el.addEventListener( 'keydown' , (e) => {
+		if (e.keyCode == 38 ) {
+		  	e.target.value = Number( e.target.value ) + 1;
+		  	e.target.dispatchEvent( new CustomEvent( 'change' ) );
+  		}
+		if (e.keyCode == 40 ) {
+  			e.target.value = Number( e.target.value ) - 1;
+		  	e.target.dispatchEvent( new CustomEvent( 'change' ) );
+  		}
+	});
+});
 
 
 

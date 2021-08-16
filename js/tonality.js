@@ -21,16 +21,6 @@ function Tonality( intervals = {}, tonic = Tonality.MIDDLEC) {
 /* Given a scale degree, returns the pitch (in MIDI note numbers) within this tonality */
 Tonality.prototype.pitch = function( degree ) {
 	const l = this.intervals.length;
-
-	console.log();
-	// console.log( 'degree: ', degree );
-	// console.log( 'this: ', this );
-	// console.log( 'l: ', l );
-	console.log( this.tonic
-		+ this.intervals[ (( degree % l ) + l ) % l ]
-		// + Math.floor( degree / l) * Tonality.OCTAVE
-		);
-
 	return this.tonic
 		+ this.intervals[ (( degree % l ) + l ) % l ]
 		+ Math.floor( degree / l) * Tonality.OCTAVE;	
