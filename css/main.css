@@ -6,8 +6,10 @@ html, body {
 	font-family: 'Source Sans Pro', sans-serif;
 }
 
+
+
 canvas {
-	height: 80vh;
+	height: 75vh;
 	width: 100vw;
 }
 
@@ -28,6 +30,24 @@ button:hover {
 }
 button:focus {
 	outline: none;
+}
+
+div#title {
+	width: 100%;
+	margin: 10px auto;
+	letter-spacing: 1em;
+	color:  cyan;
+	font-size:  1.5em;
+	font-weight:  100;
+}
+div#title:after {
+   content: " ";
+   margin-left: -1em;
+}
+
+div#parameters {
+	width: 100%;
+	margin:  10px auto;
 }
 
 div.parameter {
@@ -63,9 +83,15 @@ div.parameter label {
 	color: cyan;
 }
 
+div#controls {
+	position: fixed;
+	bottom: 20px;
+	width: 100%;
+}
+
 div#debug {
 	position: fixed;
 	color: cyan;
-	bottom: 10px;
-	left: 10px;
+	bottom: 20px;
+	left: 20px;
 }

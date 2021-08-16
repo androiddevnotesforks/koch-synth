@@ -13,11 +13,11 @@ Math.randomNormal = function() {
 
 function KochSynth( options = {} ) {
 	this.width = options.width || view.viewSize.width * .75;
-	this.levels = options.levels || 1;
+	this.levels = options.levels || 3;
 	this.tempo = options.tempo || 120;
 	this.tonality = options.tonality || Tonality.Major;
 	this.tonic = options.tonic || Tonality.MIDDLEC;
-	this.offset = options.offset || 1;
+	this.offset = options.offset || 0;
 	this.view = options.view;
 	this.synth = new Tone.Synth().toDestination();
 	this.startingPoint = this.view.center - [this.width/2, this.view.viewSize.height * -1 / 3];
@@ -91,7 +91,7 @@ KochSynth.prototype.playSegment = function( time ) {
 	let segment = project.activeLayer.children[ this.currentSegment ];
 	this.synth.triggerAttackRelease( this.tonality.freq( segment.data.pitch ), "16n", time + 0.150 );
 
-	document.getElementById( 'debug' ).innerText = segment.data.pitch;
+	document.getElementById( 'debug' ).innerText = Tone.Frequency( this.tonality.pitch( segment.data.pitch ), "midi" ).toNote();
 	segment.tween( {'strokeColor.alpha': 1}, 100 );
 	segment.tween( {"segments[1].point": segment.data.endPoint }, 50 );
 	segment.tween( {'strokeWidth': 5}, 250 ).then( function() {
@@ -165,10 +165,10 @@ document.querySelector('#playPauseButton').addEventListener('click',  (event) =>
 });
 
 document.getElementById( 'playPauseButton' ).addEventListener( 'keydown', (event) => {
-	event.preventDefault();
+	event.stopPropagation();
 });
 
-document.addEventListener( 'keypress', (e) => {
+document.addEventListener( 'keydown', (e) => {
 	if (e.keyCode == 32) {
 		if ( koch.playing ) {
 			koch.playing = false;
