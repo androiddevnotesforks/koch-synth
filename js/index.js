@@ -187,7 +187,11 @@ document.addEventListener( 'keydown', (e) => {
 
 
 document.querySelector( '#tempo' ).addEventListener( 'change', (event) => {
-	koch.setTempo( event.target.value );
+	let tempo = Math.floor( Number( event.target.value ) );
+	if ( tempo < 1 ) tempo = 1;
+	if ( tempo > 480 ) tempo = 480;
+	koch.setTempo( tempo );
+	event.target.value = tempo;
 });
 
 document.querySelector( '#tonic' ).addEventListener( 'change', (event) => {
@@ -199,7 +203,11 @@ document.querySelector( '#tonality' ).addEventListener( 'change', (event) => {
 });
 
 document.querySelector( '#levels' ).addEventListener( 'change', (event) => {
-	koch.setLevels( Number( event.target.value ) );
+	let levels = Math.floor( Number( event.target.value ) );
+	if ( levels < 0 ) levels = 0;
+	if ( levels > 8 ) levels = 8;
+	koch.setLevels( levels );
+	event.target.value = levels;
 });
 
 document.querySelector( '#offset' ).addEventListener( 'change', (event) => {
@@ -217,9 +225,19 @@ document.querySelectorAll( 'input' ).forEach( (el) => {
   			e.target.value = Number( e.target.value ) - 1;
 		  	e.target.dispatchEvent( new CustomEvent( 'change' ) );
   		}
+  		if (e.keyCode == 32 ) {
+  			e.preventDefault();
+  		}
 	});
 });
 
+document.querySelectorAll( 'select' ).forEach( (el) => {
+	el.addEventListener( 'keydown' , (e) => {
+  		if (e.keyCode == 32 ) {
+  			e.preventDefault();
+  		}
+	});
+});
 
 
 // ####        ##       ####     ####   #####
