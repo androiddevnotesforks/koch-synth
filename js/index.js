@@ -69,10 +69,11 @@ KochSynth.prototype.setLevels = function( levels ) {
 
 
 KochSynth.prototype.start = function() {
-	if ( this.initialized == false ) {
+	if ( ! this.initialized ) {
 		this.initialized = true;
 		Tone.Transport.bpm.value = this.tempo;
 		Tone.Transport.scheduleRepeat( this.playSegment.bind( this ), "16n" );
+		Tone.start();
 	}
 	Tone.Transport.start();
 }
