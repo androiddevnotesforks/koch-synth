@@ -8,8 +8,9 @@ html, body {
 	font-family: 'Roboto Mono', monospace;
 }
 
-input, select, option{
+input, select, button {
 	font-family:  'Roboto Mono', monospace;
+	-webkit-appearance: none;
 }
 
 canvas {
