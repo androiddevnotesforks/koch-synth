@@ -1,12 +1,16 @@
+@import url(https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;400&display=swap);
+
 html, body {
 	margin: 0;
 	padding: 10px;
 	background-color: black;
 	text-align: center;
-	font-family: 'Source Sans Pro', sans-serif;
+	font-family: 'Roboto Mono', monospace;
 }
 
-
+input, select, option{
+	font-family:  'Roboto Mono', monospace;
+}
 
 canvas {
 	height: 75vh;
@@ -94,4 +98,22 @@ div#debug {
 	color: cyan;
 	bottom: 20px;
 	left: 20px;
+	font-size: 0.8em;
+}
+
+div#source {
+	position: fixed;
+	color: cyan;
+	bottom: 20px;
+	right: 20px;
+	font-size: 0.8em;
+}
+
+div#source a {
+	text-decoration: none;
+	color: cyan;
+}
+
+div#source a:hover {
+	text-decoration: underline;
 }
