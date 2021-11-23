@@ -13,12 +13,12 @@ Math.randomNormal = function () {
 
 function KochSynth(options = {}) {
   this.width = options.width || view.viewSize.width * 0.75;
-  this.levels = options.levels || 3;
-  this.tempo = Number( options.tempo ) || 120;
+  this.levels = Number( options.levels ) || 3;
+  this.tempo = Number(options.tempo) || 120;
   this.tonality = options.tonality || Tonality.Major;
-  this.tonic = Number( options.tonic ) || Tonality.MIDDLEC;
-  this.offset = Number( options.offset ) || 0;
-  this.randomizeVelocity = Number( options.randomizeVelocity ) || 0;
+  this.tonic = Number(options.tonic) || Tonality.MIDDLEC;
+  this.offset = Number(options.offset) || 0;
+  this.randomizeVelocity = Number(options.randomizeVelocity) || 0;
   this.view = options.view;
   this.synth = new Tone.Synth().toDestination();
   this.startingPoint =
@@ -29,10 +29,10 @@ function KochSynth(options = {}) {
   this.playing = false;
   this.initialized = false;
 
-  if ( typeof this.tonality === "string" ) {
-	  this.tonality = Tonality[this.tonality];
+  if (typeof this.tonality === "string") {
+    this.tonality = Tonality[this.tonality];
   }
-  this.tonality = this.tonality.setTonic( this.tonic);
+  this.tonality = this.tonality.setTonic(this.tonic);
 }
 
 KochSynth.VELOCITY_QUANTIZE = 4;
@@ -205,21 +205,26 @@ for (const option in options) {
 }
 
 const updateURLParams = (params) => {
-	const search = [];
-	for (const key in params) {
-			options[key] = params[key]
-	}
-	for (const key in options ) {
-		if ( key )
-			search.push( `${key}=${options[key]}`);
-	}			
-	window.location.search = search.join("&");
+  const search = [];
+  for (const key in params) {
+    options[key] = params[key];
+  }
+  for (const key in options) {
+    if (key) search.push(`${key}=${options[key]}`);
+  }
+  window.history.pushState(
+    JSON.stringify(params),
+    document.title,
+    "?" + search.join("&")
+  );
 };
 
 const koch = new KochSynth({
   view: view,
   ...options,
 });
+
+console.log( koch );
 
 koch.drawKochSegment();
 
