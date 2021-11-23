@@ -224,8 +224,6 @@ const koch = new KochSynth({
   ...options,
 });
 
-console.log( koch );
-
 koch.drawKochSegment();
 
 /* Transport actions */
@@ -305,6 +303,10 @@ document
     koch.setRandomizeVelocity(Number(event.target.value));
     updateURLParams({ randomizeVelocity: event.target.value });
   });
+
+document.querySelector( "#copy").addEventListener("click", () => {
+	navigator.clipboard.writeText( window.location );
+});
 
 /* Keyboard navigation for text inputs */
 
