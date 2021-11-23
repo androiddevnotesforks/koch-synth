@@ -182,8 +182,21 @@ function onFrame(event) {
   }
 }
 
+/* Get query params from URL */
+const options = window.location.search.substring(1).split('&').reduce( (pendingOptions, param) => {
+	const [key, value] = param.split('=');
+	return { [key]: value, ...pendingOptions };
+}, {});
+
+/* Initialize UI controls based on params */
+
+for ( const option in options ) {
+	document.querySelector( `#${option}` ).value = options[option];
+}
+
 const koch = new KochSynth({
   view: view,
+  ...options
 });
 
 koch.drawKochSegment();
