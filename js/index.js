@@ -11,8 +11,6 @@ Math.randomNormal = function () {
 // 	await Tone.start();
 // })
 
-
-
 function KochSynth(options = {}) {
   this.width = options.width || view.viewSize.width * 0.75;
   this.levels = options.levels || 3;
@@ -101,13 +99,14 @@ KochSynth.prototype.reset = function () {
 
 KochSynth.prototype.playSegment = function (time) {
   let segment = project.activeLayer.children[this.currentSegment];
-  
+
   // At randomizeVelocity == 0, velocity will always be 1
   // At randomizeVelocity == 0.5, velocity will respect a uniform distribution between 0 and 1
   // At randomizeVelocity == 1.0, velocity will respect a parabolic distribution with 0 being more likely than 1
   const velocity =
     Math.floor(
-      Math.pow( Math.random(), 2 * this.randomizeVelocity ) * KochSynth.VELOCITY_QUANTIZE
+      Math.pow(Math.random(), 2 * this.randomizeVelocity) *
+        KochSynth.VELOCITY_QUANTIZE
     ) / KochSynth.VELOCITY_QUANTIZE;
 
   this.synth.triggerAttackRelease(
@@ -123,9 +122,11 @@ KochSynth.prototype.playSegment = function (time) {
   ).toNote()} ${velocity}`;
   segment.tween({ "strokeColor.alpha": 1 }, 100);
   segment.tween({ "segments[1].point": segment.data.endPoint }, 50);
-  segment.tween({ strokeWidth: KochSynth.MAX_STROKE_WIDTH * velocity  }, 250).then(function () {
-    segment.tween({ strokeWidth: KochSynth.MIN_STROKE_WIDTH }, 3000);
-  });
+  segment
+    .tween({ strokeWidth: KochSynth.MAX_STROKE_WIDTH * velocity }, 250)
+    .then(function () {
+      segment.tween({ strokeWidth: KochSynth.MIN_STROKE_WIDTH }, 3000);
+    });
   this.currentSegment++;
   if (this.currentSegment >= project.activeLayer.children.length) {
     this.currentSegment = 0;
@@ -183,23 +184,41 @@ function onFrame(event) {
 }
 
 /* Get query params from URL */
-const options = window.location.search.substring(1).split('&').reduce( (pendingOptions, param) => {
-	const [key, value] = param.split('=');
-	return { [key]: value, ...pendingOptions };
-}, {});
+const options = window.location.search
+  .substring(1)
+  .split("&")
+  .reduce((pendingOptions, param) => {
+    const [key, value] = param.split("=");
+    return { [key]: value, ...pendingOptions };
+  }, {});
 
 /* Initialize UI controls based on params */
-
-for ( const option in options ) {
-	document.querySelector( `#${option}` ).value = options[option];
+for (const option in options) {
+  if (option) {
+    document.querySelector(`#${option}`).value = options[option];
+  }
 }
+
+const updateURLParams = (params) => {
+	const search = []
+	for (const key in params) {
+			options[key] = params[key]
+	}
+	for (const key in options ) {
+		if ( key )
+			search.push( `${key}=${options[key]}`);
+	}			
+	window.location.search = search.join("&");
+};
 
 const koch = new KochSynth({
   view: view,
-  ...options
+  ...options,
 });
 
 koch.drawKochSegment();
+
+/* Transport actions */
 
 document
   .querySelector("#playPauseButton")
@@ -235,20 +254,25 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+/* Parameters actions */
+
 document.querySelector("#tempo").addEventListener("change", (event) => {
   let tempo = Math.floor(Number(event.target.value));
   if (tempo < 1) tempo = 1;
   if (tempo > 480) tempo = 480;
   koch.setTempo(tempo);
   event.target.value = tempo;
+  updateURLParams({ tempo: tempo });
 });
 
 document.querySelector("#tonic").addEventListener("change", (event) => {
   koch.setTonic(Number(event.target.value));
+  updateURLParams({ tonic: event.target.value });
 });
 
 document.querySelector("#tonality").addEventListener("change", (event) => {
   koch.setTonality(event.target.value);
+  updateURLParams({ tonality: event.target.value });
 });
 
 document.querySelector("#levels").addEventListener("change", (event) => {
@@ -257,15 +281,22 @@ document.querySelector("#levels").addEventListener("change", (event) => {
   if (levels > 8) levels = 8;
   koch.setLevels(levels);
   event.target.value = levels;
+  updateURLParams({ levels: levels });
 });
 
 document.querySelector("#offset").addEventListener("change", (event) => {
   koch.setOffset(Number(event.target.value));
+  updateURLParams({ offset: event.target.value });
 });
 
-document.querySelector("#randomizeVelocity").addEventListener("change", (event) => {
-	koch.setRandomizeVelocity(Number(event.target.value));
+document
+  .querySelector("#randomizeVelocity")
+  .addEventListener("change", (event) => {
+    koch.setRandomizeVelocity(Number(event.target.value));
+    updateURLParams({ randomizeVelocity: event.target.value });
   });
+
+/* Keyboard navigation for text inputs */
 
 document.querySelectorAll("input").forEach((el) => {
   el.addEventListener("keydown", (e) => {
@@ -282,6 +313,8 @@ document.querySelectorAll("input").forEach((el) => {
     }
   });
 });
+
+/* Keyboard navigation for selects */
 
 document.querySelectorAll("select").forEach((el) => {
   el.addEventListener("keydown", (e) => {
