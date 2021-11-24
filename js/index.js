@@ -20,10 +20,18 @@ function KochSynth(options = {}) {
   this.offset = Number(options.offset) || 0;
   this.randomizeVelocity = Number(options.randomizeVelocity) || 0;
   this.view = options.view;
-  this.synth = new Tone.Synth().connect( new Tone.PingPongDelay({delayTime: "8n.",
-  feedback: 0.25,
-  wet: 0.1
-}).toDestination());
+  this.synth = new Tone.Synth().connect(
+    new Tone.PingPongDelay({
+      wet: KochSynth.DELAY_WET,
+      delayTime: KochSynth.DELAY_TIME,
+      feedback: KochSynth.DELAY_FEEDBACK,
+    }).connect(
+      new Tone.Reverb({
+        wet: KochSynth.REVERB_WET,
+        decay: KochSynth.REVERB_DECAY,
+      }).toDestination()
+    )
+  );
   this.startingPoint =
     this.view.center - [this.width / 2, (this.view.viewSize.height * -1) / 3];
   this.vector = new Point([this.width, 0]);
@@ -41,6 +49,14 @@ function KochSynth(options = {}) {
 KochSynth.VELOCITY_QUANTIZE = 4;
 KochSynth.MAX_STROKE_WIDTH = 10;
 KochSynth.MIN_STROKE_WIDTH = 2;
+
+KochSynth.DELAY_WET = 0.1
+KochSynth.DELAY_TIME = "8n.";
+KochSynth.DELAY_FEEDBACK = 0.25;
+
+KochSynth.REVERB_WET = 0.35;
+KochSynth.REVERB_DECAY = 4;
+
 
 KochSynth.prototype.setTempo = function (tempo) {
   this.tempo = tempo;
