@@ -57,7 +57,6 @@ KochSynth.DELAY_FEEDBACK = 0.25;
 KochSynth.REVERB_WET = 0.35;
 KochSynth.REVERB_DECAY = 4;
 
-
 KochSynth.prototype.setTempo = function (tempo) {
   this.tempo = tempo;
   Tone.Transport.bpm.value = this.tempo;
