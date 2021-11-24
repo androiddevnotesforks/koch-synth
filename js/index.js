@@ -20,7 +20,10 @@ function KochSynth(options = {}) {
   this.offset = Number(options.offset) || 0;
   this.randomizeVelocity = Number(options.randomizeVelocity) || 0;
   this.view = options.view;
-  this.synth = new Tone.Synth().toDestination();
+  this.synth = new Tone.Synth().connect( new Tone.PingPongDelay({delayTime: "8n.",
+  feedback: 0.25,
+  wet: 0.1
+}).toDestination());
   this.startingPoint =
     this.view.center - [this.width / 2, (this.view.viewSize.height * -1) / 3];
   this.vector = new Point([this.width, 0]);
