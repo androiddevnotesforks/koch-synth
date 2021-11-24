@@ -63,11 +63,15 @@ Tonality.NaturalMinor = Tonality.Minor;
 Tonality.HarmonicMinor = new Tonality( [0, 2, 3, 5, 7, 8, 11] );
 Tonality.MelodicMinor = new Tonality( [0, 2, 3, 5, 7, 9, 11] );
 
+/* Pentatonics */
 
 Tonality.Pentatonic = new Tonality( [0, 2, 4, 7, 9]);
 Tonality.MinorPentatonic = Tonality.Pentatonic.mode( 4 );
 
-Tonality.Phreygish = new Tonality( [0, 2, 3, 6, 7, 9]);
+/* Klezmer modes */
+
+Tonality.Freygish = new Tonality( [0, 1, 4, 5, 7, 8, 10]);
+Tonality.MiSheberakh = Tonality.Freygish.mode( 6 );
 
 /* Modes */
 
@@ -79,3 +83,6 @@ Tonality.Mixolydian = Tonality.Ionian.mode( 4 );
 Tonality.Aeolian = Tonality.Ionian.mode( 5 );
 Tonality.Locrian = Tonality.Ionian.mode( 6 );
 
+/* Balinese */
+
+Tonality.Selisir = new Tonality( [ 0, 1, 3, 7, 8]);

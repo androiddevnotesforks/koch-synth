@@ -13,7 +13,7 @@ Math.randomNormal = function () {
 
 function KochSynth(options = {}) {
   this.width = options.width || view.viewSize.width * 0.75;
-  this.levels = Number( options.levels ) || 3;
+  this.levels = Number(options.levels) || 3;
   this.tempo = Number(options.tempo) || 120;
   this.tonality = options.tonality || Tonality.Major;
   this.tonic = Number(options.tonic) || Tonality.MIDDLEC;
@@ -49,22 +49,8 @@ KochSynth.prototype.setTonic = function (tonic) {
 };
 
 KochSynth.prototype.setTonality = function (tonality) {
-  switch (tonality) {
-    case "Major":
-      this.tonality = Tonality.Major.setTonic(this.tonic);
-      break;
-    case "Minor":
-      this.tonality = Tonality.Minor.setTonic(this.tonic);
-      break;
-    case "Pentatonic":
-      this.tonality = Tonality.Pentatonic.setTonic(this.tonic);
-      break;
-    case "MinorPentatonic":
-      this.tonality = Tonality.MinorPentatonic.setTonic(this.tonic);
-      break;
-    case "Phreygish":
-      this.tonality = Tonality.Phreygish.setTonic(this.tonic);
-      break;
+  if (Tonality[tonality]) {
+    this.tonality = Tonality[tonality].setTonic(this.tonic);
   }
 };
 
@@ -304,8 +290,8 @@ document
     updateURLParams({ randomizeVelocity: event.target.value });
   });
 
-document.querySelector( "#copy").addEventListener("click", () => {
-	navigator.clipboard.writeText( window.location );
+document.querySelector("#copy").addEventListener("click", () => {
+  navigator.clipboard.writeText(window.location);
 });
 
 /* Keyboard navigation for text inputs */
