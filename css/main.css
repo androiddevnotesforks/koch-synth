@@ -88,6 +88,10 @@ div.parameter label {
 	color: cyan;
 }
 
+div#copy {
+	cursor: pointer;
+}
+
 div#controls {
 	position: fixed;
 	bottom: 20px;
